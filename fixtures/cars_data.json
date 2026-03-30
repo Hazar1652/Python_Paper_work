@@ -1,0 +1,37 @@
+[
+  {
+    "model": "cars.make",
+    "pk": 1,
+    "fields": { "name": "Toyota" }
+  },
+  {
+    "model": "cars.make",
+    "pk": 2,
+    "fields": { "name": "BMW" }
+  },
+  {
+    "model": "cars.make",
+    "pk": 3,
+    "fields": { "name": "Mercedes" }
+  },
+  {
+    "model": "cars.carmodel",
+    "pk": 1,
+    "fields": { "name": "Camry", "make": 1 }
+  },
+  {
+    "model": "cars.carmodel",
+    "pk": 2,
+    "fields": { "name": "Corolla", "make": 1 }
+  },
+  {
+    "model": "cars.carmodel",
+    "pk": 3,
+    "fields": { "name": "X5", "make": 2 }
+  },
+  {
+    "model": "cars.carmodel",
+    "pk": 4,
+    "fields": { "name": "E-Class", "make": 3 }
+  }
+]
