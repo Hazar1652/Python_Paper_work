@@ -46,11 +46,7 @@ class CarStatsView(APIView):
 
 
 class RecordViewPublicView(APIView):
-    """
-    POST /stats/<car_id>/view/
-    Записує перегляд — викликається коли будь-який
-    користувач відкриває сторінку оголошення.
-    """
+
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, car_id):

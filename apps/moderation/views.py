@@ -15,14 +15,10 @@ class ModerationLogSerializer(serializers.ModelSerializer):
 
 
 class ModerateCarView(APIView):
-    """
-    Менеджер або адмін вручну запускає модерацію оголошення.
-    POST /moderation/cars/<car_id>/moderate/
-    """
+
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, car_id):
-        # Тільки менеджери і адміни можуть модерувати
         if request.user.role not in ['manager', 'admin']:
             return Response(
                 {'error': 'Тільки менеджери можуть модерувати оголошення'},
@@ -34,10 +30,7 @@ class ModerateCarView(APIView):
 
 
 class CarModerationLogsView(APIView):
-    """
-    Показує історію модерації для конкретного оголошення.
-    GET /moderation/cars/<car_id>/logs/
-    """
+
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, car_id):
@@ -50,10 +43,7 @@ class CarModerationLogsView(APIView):
 
 
 class PendingCarsView(APIView):
-    """
-    Список оголошень які чекають на модерацію.
-    GET /moderation/pending/
-    """
+
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):

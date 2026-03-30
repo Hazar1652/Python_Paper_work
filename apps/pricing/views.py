@@ -5,7 +5,6 @@ from .services import fetch_rates_from_privatbank, get_today_rates
 
 
 class CurrentRatesView(APIView):
-    # Показує поточні курси валют — доступно всім
     permission_classes = [AllowAny]
 
     def get(self, request):

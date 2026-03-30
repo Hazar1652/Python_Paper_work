@@ -38,7 +38,6 @@ class CarListCreateView(generics.ListCreateAPIView):
         converted = convert_price(price, currency, rates)
         car = serializer.save(owner=self.request.user, **converted)
 
-        # Автоматично запускаємо модерацію після створення
         from apps.moderation.services import moderate_car
         moderate_car(car.id)
 
@@ -49,7 +48,6 @@ class CarDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsOwnerOrManagerOrAdmin]
 
     def retrieve(self, request, *args, **kwargs):
-        # Записуємо перегляд при кожному GET запиті
         from apps.stats.services import record_view
         record_view(kwargs.get('pk'))
         return super().retrieve(request, *args, **kwargs)

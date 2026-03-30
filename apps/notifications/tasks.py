@@ -5,10 +5,7 @@ from django.conf import settings
 
 @shared_task
 def send_moderation_notification(manager_email, car_id, reason):
-    """
-    Відправляє email менеджеру про деактивоване оголошення.
-    Це асинхронна задача — виконується у фоні через Celery.
-    """
+
     print(f'[Celery] Відправка email до {manager_email} про оголошення #{car_id}')
 
     subject = f'Оголошення #{car_id} деактивовано'
@@ -35,9 +32,7 @@ def send_moderation_notification(manager_email, car_id, reason):
 
 @shared_task
 def send_listing_flagged_notification(seller_email, car_id, edits_remaining):
-    """
-    Сповіщає продавця що його оголошення позначено як flagged.
-    """
+
     print(f'[Celery] Сповіщення продавця {seller_email} про flagged оголошення #{car_id}')
 
     subject = f'Ваше оголошення #{car_id} потребує виправлення'

@@ -15,7 +15,6 @@ class CarModelSerializer(serializers.ModelSerializer):
 
 
 class CarSerializer(serializers.ModelSerializer):
-    # read_only — ці поля показуємо але не приймаємо при створенні
     owner_username = serializers.CharField(source='owner.username', read_only=True)
     make_name = serializers.CharField(source='make.name', read_only=True)
     model_name = serializers.CharField(source='model.name', read_only=True)
@@ -41,8 +40,6 @@ class CarSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         user = request.user
 
-        # Перевірка ліміту для Basic акаунту
-        # Basic може мати тільки 1 активне оголошення
         if not self.instance:  # тільки при створенні (не при оновленні)
             if user.account_type == 'basic':
                 active_cars = Car.objects.filter(

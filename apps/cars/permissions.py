@@ -10,7 +10,6 @@ class IsSellerOrAdmin(permissions.BasePermission):
 
 class IsOwnerOrManagerOrAdmin(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
-        # Спочатку перевіряємо чи користувач залогінений
         if not request.user.is_authenticated:
             return False
 

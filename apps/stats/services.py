@@ -5,12 +5,7 @@ from decimal import Decimal
 
 
 def get_view_keys(car_id):
-    """
-    Повертає Redis ключі для різних періодів.
-    Кожен ключ унікальний для конкретного дня/тижня/місяця.
-    Це означає що лічильники автоматично скидаються
-    коли настає новий день/тиждень/місяць.
-    """
+
     now = timezone.now()
 
     # Формат ключів: car_views:<car_id>:<period>:<date>
@@ -28,23 +23,18 @@ def get_view_keys(car_id):
 
 
 def record_view(car_id):
-    """
-    Записує перегляд оголошення в Redis.
-    Викликається кожного разу коли хтось відкриває оголошення.
-    """
+
     keys = get_view_keys(car_id)
 
-    # INCR — атомарно збільшує лічильник на 1
-    # Якщо ключа немає — створює його зі значенням 1
+
     cache.incr(keys['total']) if cache.get(keys['total']) else cache.set(keys['total'], 1)
 
-    # Денний лічильник живе 25 годин
+
     if cache.get(keys['day']):
         cache.incr(keys['day'])
     else:
         cache.set(keys['day'], 1, timeout=60 * 60 * 25)
 
-    # Тижневий лічильник живе 8 днів
     if cache.get(keys['week']):
         cache.incr(keys['week'])
     else:
@@ -58,9 +48,7 @@ def record_view(car_id):
 
 
 def get_view_stats(car_id):
-    """
-    Повертає статистику переглядів з Redis.
-    """
+
     keys = get_view_keys(car_id)
 
     return {
@@ -72,23 +60,18 @@ def get_view_stats(car_id):
 
 
 def get_price_stats(car_id):
-    """
-    Розраховує середню ціну по регіону і по країні.
-    Порівнює ціну конкретного оголошення з ринком.
-    """
+
     try:
         car = Car.objects.get(id=car_id)
     except Car.DoesNotExist:
         return {}
 
-    # Активні оголошення з такою самою маркою і моделлю
     similar_cars = Car.objects.filter(
         make=car.make,
         model=car.model,
         status='active',
     ).exclude(id=car_id)
 
-    # Середня ціна по регіону
     regional_cars = similar_cars.filter(region=car.region)
     regional_prices = [c.price_usd for c in regional_cars if c.price_usd]
     avg_regional = (
@@ -96,7 +79,6 @@ def get_price_stats(car_id):
         if regional_prices else None
     )
 
-    # Середня ціна по країні
     national_prices = [c.price_usd for c in similar_cars if c.price_usd]
     avg_national = (
         sum(national_prices) / len(national_prices)

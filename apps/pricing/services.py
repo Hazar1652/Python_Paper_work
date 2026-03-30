@@ -5,15 +5,12 @@ from .models import ExchangeRate
 
 
 def fetch_rates_from_privatbank():
-    """
-    Отримує курси валют з API ПриватБанку і зберігає в БД.
-    ПриватБанк повертає курси для всіх валют — ми беремо тільки USD і EUR.
-    """
+
     url = 'https://api.privatbank.ua/p24api/pubinfo?exchange&coursid=5'
 
     try:
         response = requests.get(url, timeout=10)
-        response.raise_for_status()  # кидає помилку якщо статус не 200
+        response.raise_for_status()
         data = response.json()
     except requests.RequestException as e:
         print(f'Помилка отримання курсів: {e}')
@@ -23,11 +20,11 @@ def fetch_rates_from_privatbank():
     rates = {}
 
     for item in data:
-        currency = item.get('ccy')  # назва валюти: USD, EUR тощо
+        currency = item.get('ccy')
         if currency in ['USD', 'EUR']:
-            rate = Decimal(str(item.get('sale', 0)))  # курс продажу
+            rate = Decimal(str(item.get('sale', 0)))
 
-            # Зберігаємо або оновлюємо курс на сьогодні
+
             obj, created = ExchangeRate.objects.update_or_create(
                 currency=currency,
                 date=today,
@@ -39,10 +36,7 @@ def fetch_rates_from_privatbank():
 
 
 def get_today_rates():
-    """
-    Повертає сьогоднішні курси з БД.
-    Якщо курсів немає — завантажує їх з ПриватБанку.
-    """
+
     today = date.today()
     rates = {}
 
@@ -51,7 +45,6 @@ def get_today_rates():
             rate_obj = ExchangeRate.objects.get(currency=currency, date=today)
             rates[currency] = rate_obj.rate_to_uah
         except ExchangeRate.DoesNotExist:
-            # Курсів немає в БД — завантажуємо
             fetched = fetch_rates_from_privatbank()
             if fetched:
                 rates = fetched
@@ -61,17 +54,9 @@ def get_today_rates():
 
 
 def convert_price(price, currency, rates):
-    """
-    Конвертує ціну в усі три валюти.
 
-    price — оригінальна ціна
-    currency — оригінальна валюта (USD, EUR або UAH)
-    rates — словник {'USD': Decimal(...), 'EUR': Decimal(...)}
-
-    Повертає словник з цінами в усіх валютах.
-    """
     price = Decimal(str(price))
-    usd_rate = rates.get('USD', Decimal('40'))  # fallback якщо API недоступний
+    usd_rate = rates.get('USD', Decimal('40'))
     eur_rate = rates.get('EUR', Decimal('43'))
 
     if currency == 'USD':
